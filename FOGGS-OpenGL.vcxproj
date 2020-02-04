@@ -138,6 +138,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="GLUTCallbacks.cpp" />
+    <ClCompile Include="HelloGL.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="GLUTCallbacks.h" />
+    <ClInclude Include="HelloGL.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
