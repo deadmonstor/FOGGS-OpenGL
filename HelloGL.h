@@ -5,15 +5,21 @@
 #include <gl/GLU.h>
 #include "GL\freeglut.h"
 
+#define REFRESHRATE 16
 
 class HelloGL
 {
-public:
+	public:
 
-	HelloGL(int argc, char* argv[]);
+		HelloGL(int argc, char* argv[]);
 
-	void Display();
-	void DrawPolygon();
+		void Display();
+		void DrawPolygon();
+		void Update();
 
-	~HelloGL(void);
+		~HelloGL(void);
+
+	private:
+		float rotation;
+
 };
