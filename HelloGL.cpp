@@ -16,13 +16,33 @@ HelloGL::HelloGL(int argc, char* argv[])
 	GLUTCallbacks::Init(this);
 
 	glutInit(&argc, argv);
-	glutCreateWindow("Simple OpenGL Program");
+
+	glutInitDisplayMode(GLUT_DOUBLE);
 	glutInitWindowSize(800, 800);
+	glutInitWindowPosition(100, 100);
+	glutCreateWindow("Simple OpenGL Program");
+
 	glutDisplayFunc(GLUTCallbacks::Display);
+	glutKeyboardFunc(GLUTCallbacks::Keyboard);
 
 	glutTimerFunc(REFRESHRATE, GLUTCallbacks::Timer, REFRESHRATE);
 
 	glutMainLoop();
+}
+
+void HelloGL::Update()
+{
+
+	if (rotation >= 360.0f)
+		rotation = 0.0f;
+
+	glutPostRedisplay();
+}
+
+void HelloGL::Keyboard(unsigned char key, int x, int y)
+{
+	if (key == 'd')
+		rotation += 0.5f;
 }
 
 void HelloGL::Display()
@@ -30,16 +50,7 @@ void HelloGL::Display()
 	glClear(GL_COLOR_BUFFER_BIT);
 		DrawPolygon();
 	glFlush();
-}
-
-void HelloGL::Update()
-{
-	rotation += 0.5f;
-
-	if (rotation >= 360.0f)
-		rotation = 0.0f;
-
-	glutPostRedisplay();
+	glutSwapBuffers();
 }
 
 void HelloGL::DrawPolygon()
