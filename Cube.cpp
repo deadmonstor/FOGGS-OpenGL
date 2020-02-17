@@ -1,21 +1,21 @@
 #include "Cube.h"
 
-Vertex Cube::indexedVertices[] = { 1, 1, 1,  -1, 1, 1,  // v0,v1,
-				-1,-1, 1,   1,-1, 1,   // v2,v3
-				1,-1,-1,   1, 1,-1,    // v4,v5
-				-1, 1,-1,   -1,-1,-1 }; // v6,v7
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <regex>
 
-Color Cube::indexedColors[] = { 1, 1, 1,   1, 1, 0,   // v0,v1,
-				1, 0, 0,   1, 0, 1,   // v2,v3
-				0, 0, 1,   0, 1, 1,   // v4,v5
-				0, 1, 0,   0, 0, 0 }; //v6,v7
+using namespace std;
 
-GLushort Cube::indices[] = { 0, 1, 2,  2, 3, 0,      // front
-				0, 3, 4,  4, 5, 0,      // right
-				0, 5, 6,  6, 1, 0,      // top
-				1, 6, 7,  7, 2, 1,      // left
-				7, 4, 3,  3, 2, 7,      // bottom
-				4, 7, 6,  6, 5, 4 };    // back
+Vertex* Cube::indexedVertices = nullptr;
+Color* Cube::indexedColors = nullptr;
+GLushort* Cube::indices = nullptr;
+
+int Cube::numVertices = 0;
+int Cube::numColors = 0;
+int Cube::numIndices = 0;
+
+using namespace std;
 
 Cube::Cube(float x, float y, float z)
 {
@@ -31,21 +31,117 @@ void Cube::Update()
 
 void Cube::Draw()
 {
-	glTranslatef(_position.x, _position.y, _position.z);
-	glRotatef(_rotation, 1.0f, 0.0f, 0.0f);
 
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_COLOR_ARRAY);
-	glVertexPointer(3, GL_FLOAT, 0, indexedVertices);
-	glColorPointer(3, GL_FLOAT, 0, indexedColors);
+	if (indexedVertices != nullptr && indexedColors != nullptr && indices != nullptr)
+	{
+		glTranslatef(_position.x, _position.y, _position.z);
+		glRotatef(_rotation, 1.0f, 0.0f, 0.0f);
 
-	glPushMatrix();
-	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, indices);
-	glPopMatrix();
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glEnableClientState(GL_COLOR_ARRAY);
+		glVertexPointer(3, GL_FLOAT, 0, indexedVertices);
+		glColorPointer(3, GL_FLOAT, 0, indexedColors);
 
-	glDisableClientState(GL_COLOR_ARRAY);
-	glDisableClientState(GL_VERTEX_ARRAY);
+		glPushMatrix();
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, indices);
+		glPopMatrix();
+
+		glDisableClientState(GL_COLOR_ARRAY);
+		glDisableClientState(GL_VERTEX_ARRAY);
+	}
 }
+
+vector<string> whiteSpaceRegex(string line)
+{
+
+	regex ws_re("(\ )+");
+	vector<string> result{
+		sregex_token_iterator(line.begin(), line.end(), ws_re, -1), {}
+	};
+
+
+	return result;
+}
+
+bool Cube::Load(char* path)
+{
+	ifstream inFile;
+	inFile.open(path);
+
+	if (!inFile.good())
+	{
+		cerr << "Can't open text file " << path << endl;
+		return false;
+	}
+
+	vector<string> result;
+	string line;
+	getline(inFile, line);
+
+	numVertices = stoi(line);
+	indexedVertices = new Vertex[numVertices];
+
+	for (int i = 0; i < numVertices; i++)
+	{
+		getline(inFile, line);
+
+		result = whiteSpaceRegex(line);
+
+		if (result.size() == 3)
+		{
+			indexedVertices[i].x = stof(result[0]);
+			indexedVertices[i].y = stof(result[1]);
+			indexedVertices[i].z = stof(result[2]);
+		}
+
+	}
+
+	getline(inFile, line);
+
+	numColors = stoi(line);
+	indexedColors = new Color[numColors];
+
+	for (int i = 0; i < numColors; i++)
+	{
+		getline(inFile, line);
+
+		result = whiteSpaceRegex(line);
+
+		if (result.size() == 3)
+		{
+			indexedColors[i].r = stof(result[0]);
+			indexedColors[i].g = stof(result[1]);
+			indexedColors[i].b = stof(result[2]);
+		}
+
+	}
+
+
+	getline(inFile, line);
+
+	numIndices = stoi(line);
+	indices = new GLushort[numIndices];
+
+	for (int i = 0; i < numIndices; i += 3)
+	{
+		getline(inFile, line);
+
+		result = whiteSpaceRegex(line);
+
+		if (result.size() == 3)
+		{
+			indices[i] = stoi(result[0]);
+			indices[i + 1] = stoi(result[1]);
+			indices[i + 2] = stoi(result[2]);
+		}
+
+	}
+
+	inFile.close();
+
+	return true;
+}
+
 
 Cube::~Cube()
 {

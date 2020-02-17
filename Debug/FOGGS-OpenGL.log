@@ -1,2 +1,3 @@
-﻿  HelloGL.cpp
+﻿  Cube.cpp
+C:\Users\deadm\Desktop\FOGGS-Tuts\Project\FOGGS-OpenGL\Cube.cpp(57,14): warning C4129: ' ': unrecognized character escape sequence
   FOGGS-OpenGL.vcxproj -> C:\Users\deadm\Desktop\FOGGS-Tuts\Project\FOGGS-OpenGL\Debug\FOGGS-OpenGL.exe

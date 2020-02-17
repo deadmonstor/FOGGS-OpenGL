@@ -41,14 +41,14 @@ HelloGL::HelloGL(int argc, char* argv[])
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_ALWAYS);
 
-
 	glMatrixMode(GL_MODELVIEW);
-
 
 	for (int i = 0; i < 200; i++)
 	{
-		cubes.push_back(new Cube(((rand() % 400) / 10.0f) - 20.0f, ((rand() % 200) / 10.0f) - 10.0f, -(rand() % 1000) / 10.0f));
+		cubes.push_back(new Cube(((rand() % 400) / 10.0f) - 20.0f, ((rand() % 200) / 10.0f) - 10.0f, -(rand() % 200) / 10.0f));
 	}
+
+	Cube::Load((char*)"cube.txt");
 
 	glutMainLoop();
 }
