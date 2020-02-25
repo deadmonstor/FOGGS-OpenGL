@@ -17,6 +17,10 @@
 	#include "SceneObject.h"
 	#endif
 
+	#ifndef _Texture2D
+	#include "Texture2D.h"
+	#endif
+
 	#ifndef _hStructs
 	#include "Structures.h"
 	#endif
@@ -26,10 +30,11 @@
 	private:
 		GLfloat _rotation = 0;
 		Vector3 _position;
+		Texture2D* _texture;
 
 	public:
 
-		Pyramid(Mesh* mesh, float x, float y, float z);
+		Pyramid(Mesh* mesh, Texture2D* text, float x, float y, float z);
 		~Pyramid();
 
 		void Draw();

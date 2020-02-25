@@ -67,6 +67,31 @@ namespace MeshLoader
 		}
 	}
 
+	void LoadUVs(ifstream& inFile, Mesh& mesh)
+	{
+		vector<string> result;
+		string line;
+
+		getline(inFile, line);
+
+		mesh.numTexCoords = stoi(line);
+		mesh.TexCoords = new TexCoord[mesh.numTexCoords];
+
+		for (int i = 0; i < mesh.numTexCoords; i++)
+		{
+			getline(inFile, line);
+
+			result = whiteSpaceRegex(line);
+
+			if (result.size() == 2)
+			{
+				mesh.TexCoords[i].u = stof(result[0]);
+				mesh.TexCoords[i].v = stof(result[1]);
+			}
+
+		}
+	}
+
 	void LoadIndices(ifstream& inFile, Mesh& mesh)
 	{
 
@@ -110,6 +135,7 @@ namespace MeshLoader
 
 		LoadVertices(inFile, *mesh);
 		LoadColours(inFile, *mesh);
+		LoadUVs(inFile, *mesh);
 		LoadIndices(inFile, *mesh);
 
 		return mesh;

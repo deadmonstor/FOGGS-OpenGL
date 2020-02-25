@@ -7,6 +7,10 @@
 #include "GL\freeglut.h"
 #include "GLUTCallbacks.h"
 
+#ifndef _Texture2D
+#include "Texture2D.h"
+#endif
+
 #ifndef _Cube
 #include "Cube.h"
 #endif

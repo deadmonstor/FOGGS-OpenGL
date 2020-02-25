@@ -29,12 +29,18 @@
 		GLfloat	x, y, z;
 	};
 
+	struct TexCoord
+	{
+		GLfloat u, v;
+	};
+
 	struct Mesh
 	{
 		Vertex* indexedVertices;
 		Color* indexedColors;
 		GLushort* indices;
-		int numVertices, numColors, numIndices;
+		TexCoord* TexCoords;
+		int numVertices, numColors, numIndices, numTexCoords;
 	};
 
 

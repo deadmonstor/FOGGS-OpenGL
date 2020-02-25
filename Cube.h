@@ -21,15 +21,20 @@
 	#include "Structures.h"
 	#endif
 
+	#ifndef _Texture2D
+	#include "Texture2D.h"
+	#endif
+
 	class Cube : public SceneObject
 	{
 	private:
+		Texture2D* _texture;
 		GLfloat _rotation = 0;
 		Vector3 _position;
 
 	public:
 
-		Cube(Mesh* mesh, float x, float y, float z);
+		Cube(Mesh* mesh, Texture2D* _texture, float x, float y, float z);
 		~Cube();
 
 		void Draw();
