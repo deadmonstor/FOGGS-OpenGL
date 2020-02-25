@@ -3,9 +3,30 @@
 #include <Windows.h>
 #include <gl/GL.h>
 #include <gl/GLU.h>
+
 #include "GL\freeglut.h"
-#include "Structures.h"
+#include "GLUTCallbacks.h"
+
+#ifndef _Cube
 #include "Cube.h"
+#endif
+
+#ifndef _Pyramid
+#include "pyramid.h"
+#endif
+
+#ifndef _MeshLoader
+#include "MeshLoader.h"
+#endif
+
+#ifndef _SceneObject
+#include "SceneObject.h"
+#endif
+
+#ifndef _hStructs
+#include "Structures.h"
+#endif
+
 #include <vector>
 
 #define REFRESHRATE 16
@@ -23,9 +44,12 @@ class HelloGL
 
 		~HelloGL(void);
 
+		void InitObjects();
+		void InitGL(int argc, char* argv[]);
+
 	private:
 		float rotation;
 		Camera* curCamera;
-		std::vector<Cube*> cubes;
+		std::vector<SceneObject*> objects;
 
 };

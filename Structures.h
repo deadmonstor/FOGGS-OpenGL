@@ -1,25 +1,41 @@
 #pragma once
 
-struct Vector3
-{
-	float x, y, z;
+#include "GL\freeglut.h"
 
-	Vector3() : x(0), y(0), z(0) {}
+#ifndef _hStructs
+#define _hStructs
 
-	Vector3(float x, float y, float z) : x(x), y(y), z(z) {}
-};
+	struct Vector3
+	{
+		float x, y, z;
 
-struct Camera
-{
-	Vector3 eye, center, up;
-};
+		Vector3() : x(0), y(0), z(0) {}
 
-struct Color
-{
-	GLfloat r, g, b;
-};
+		Vector3(float x, float y, float z) : x(x), y(y), z(z) {}
+	};
 
-struct Vertex
-{
-	GLfloat	x, y, z;
-};
+	struct Camera
+	{
+		Vector3 eye, center, up;
+	};
+
+	struct Color
+	{
+		GLfloat r, g, b;
+	};
+
+	struct Vertex
+	{
+		GLfloat	x, y, z;
+	};
+
+	struct Mesh
+	{
+		Vertex* indexedVertices;
+		Color* indexedColors;
+		GLushort* indices;
+		int numVertices, numColors, numIndices;
+	};
+
+
+#endif // !_hStructs

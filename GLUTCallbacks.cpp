@@ -2,8 +2,6 @@
 #include "GLUTCallbacks.h"
 #include "HelloGL.h"
 
-#include <iostream>
-
 namespace GLUTCallbacks
 {
 	namespace
