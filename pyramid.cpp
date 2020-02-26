@@ -18,19 +18,19 @@ void Pyramid::Update()
 void Pyramid::Draw()
 {
 
-	if (_mesh->indexedVertices != nullptr && _mesh->indexedColors != nullptr && _mesh->indices != nullptr)
+	if (_mesh->indexedVertices != nullptr && _mesh->indexedNormals != nullptr && _mesh->indices != nullptr)
 	{
 		glBindTexture(GL_TEXTURE_2D, _texture->GetID());
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-		glScalef(1,1,1);
+		glScalef(1, 1, 1);
 		glTranslatef(_position.x, _position.y, _position.z);
 		glRotatef(_rotation, 0.0f, 1.0f, 0.0f);
 
+		glEnable(GL_NORMAL_ARRAY);
+		glNormalPointer(GL_FLOAT, 0, _mesh->indexedNormals);
 		glEnableClientState(GL_VERTEX_ARRAY);
-		glEnableClientState(GL_COLOR_ARRAY);
 		glVertexPointer(3, GL_FLOAT, 0, _mesh->indexedVertices);
-		glColorPointer(3, GL_FLOAT, 0, _mesh->indexedColors);
 
 		glTexCoordPointer(2, GL_FLOAT, 0, _mesh->TexCoords);
 		glPushMatrix();

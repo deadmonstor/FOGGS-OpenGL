@@ -41,17 +41,17 @@ namespace MeshLoader
 		}
 	}
 
-	void LoadColours(ifstream& inFile, Mesh& mesh)
+	void LoadNormals(ifstream& inFile, Mesh& mesh)
 	{
 		vector<string> result;
 		string line;
 
 		getline(inFile, line);
 
-		mesh.numColors = stoi(line);
-		mesh.indexedColors = new Color[mesh.numColors];
+		mesh.numNormals = stoi(line);
+		mesh.indexedNormals = new Vector3[mesh.numNormals];
 
-		for (int i = 0; i < mesh.numColors; i++)
+		for (int i = 0; i < mesh.numNormals; i++)
 		{
 			getline(inFile, line);
 
@@ -59,9 +59,9 @@ namespace MeshLoader
 
 			if (result.size() == 3)
 			{
-				mesh.indexedColors[i].r = stof(result[0]);
-				mesh.indexedColors[i].g = stof(result[1]);
-				mesh.indexedColors[i].b = stof(result[2]);
+				mesh.indexedNormals[i].x = stof(result[0]);
+				mesh.indexedNormals[i].y = stof(result[1]);
+				mesh.indexedNormals[i].z = stof(result[2]);
 			}
 
 		}
@@ -134,8 +134,8 @@ namespace MeshLoader
 		}
 
 		LoadVertices(inFile, *mesh);
-		LoadColours(inFile, *mesh);
 		LoadUVs(inFile, *mesh);
+		LoadNormals(inFile, *mesh);
 		LoadIndices(inFile, *mesh);
 
 		return mesh;

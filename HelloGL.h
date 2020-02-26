@@ -49,11 +49,16 @@ class HelloGL
 		~HelloGL(void);
 
 		void InitObjects();
+		void InitLighting();
 		void InitGL(int argc, char* argv[]);
 
 	private:
 		float rotation;
 		Camera* curCamera;
 		std::vector<SceneObject*> objects;
+
+		Vector4* _lightPosition;
+		lighting* _lightData;
+
 
 };

@@ -14,6 +14,15 @@
 		Vector3(float x, float y, float z) : x(x), y(y), z(z) {}
 	};
 
+	struct Vector4
+	{
+		float x, y, z, w;
+
+		Vector4() : x(0), y(0), z(0), w(0) {}
+
+		Vector4(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
+	};
+
 	struct Camera
 	{
 		Vector3 eye, center, up;
@@ -34,13 +43,25 @@
 		GLfloat u, v;
 	};
 
+	struct lighting
+	{
+		Vector4 ambient, diffuse, specular;
+	};
+
+	struct material
+	{
+		Vector4 ambient, diffuse, specular;
+		GLfloat shininess;
+	};
+
 	struct Mesh
 	{
 		Vertex* indexedVertices;
-		Color* indexedColors;
+		//Color* indexedColors;
+		Vector3* indexedNormals;
 		GLushort* indices;
 		TexCoord* TexCoords;
-		int numVertices, numColors, numIndices, numTexCoords;
+		int numVertices, numNormals, numIndices, numTexCoords;
 	};
 
 

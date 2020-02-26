@@ -1,2 +1,8 @@
-﻿  Texture2D.cpp
+﻿  Cube.cpp
+C:\Users\deadm\Desktop\FOGGS-Tuts\Project\FOGGS-OpenGL\Cube.cpp(12,28): warning C4305: '=': truncation from 'double' to 'float'
+C:\Users\deadm\Desktop\FOGGS-Tuts\Project\FOGGS-OpenGL\Cube.cpp(12,57): warning C4305: '=': truncation from 'double' to 'float'
+C:\Users\deadm\Desktop\FOGGS-Tuts\Project\FOGGS-OpenGL\Cube.cpp(12,86): warning C4305: '=': truncation from 'double' to 'float'
+C:\Users\deadm\Desktop\FOGGS-Tuts\Project\FOGGS-OpenGL\Cube.cpp(13,28): warning C4305: '=': truncation from 'double' to 'float'
+C:\Users\deadm\Desktop\FOGGS-Tuts\Project\FOGGS-OpenGL\Cube.cpp(13,57): warning C4305: '=': truncation from 'double' to 'float'
+C:\Users\deadm\Desktop\FOGGS-Tuts\Project\FOGGS-OpenGL\Cube.cpp(13,86): warning C4305: '=': truncation from 'double' to 'float'
   FOGGS-OpenGL.vcxproj -> C:\Users\deadm\Desktop\FOGGS-Tuts\Project\FOGGS-OpenGL\Debug\FOGGS-OpenGL.exe
