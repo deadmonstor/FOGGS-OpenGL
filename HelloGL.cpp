@@ -11,6 +11,16 @@ HelloGL::HelloGL(int argc, char* argv[])
 {
 	srand(time(NULL));
 	InitGL(argc, argv);
+
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+
+	ImGui::StyleColorsDark();
+	ImGui_ImplGLUT_Init();
+	ImGui_ImplGLUT_InstallFuncs();
+	ImGui_ImplOpenGL2_Init();
+
 	InitObjects();
 	InitLighting();
 
@@ -25,8 +35,8 @@ void HelloGL::InitGL(int argc, char* argv[])
 	glutInit(&argc, argv);
 
 	glutInitDisplayMode(GLUT_DOUBLE);
-	glutInitWindowSize(800, 800);
-	glutInitWindowPosition(100, 100);
+	glutInitWindowSize(1920, 1080);
+	glutInitWindowPosition(0, 0);
 	glutCreateWindow("Simple OpenGL Program");
 
 	glutDisplayFunc(GLUTCallbacks::Display);
@@ -36,23 +46,22 @@ void HelloGL::InitGL(int argc, char* argv[])
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glViewport(0, 0, 800, 800);
-	gluPerspective(45, 1, 0, 1e+100);
+	glViewport(0, 0, 1000, 1080);
+	gluPerspective(45, 1, 0.1f, 100.0f);
 
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 
 	glEnable(GL_DEPTH_TEST);
-	glDepthMask(GL_TRUE);
 	glDepthFunc(GL_LEQUAL);
-	glDepthRange(1, 0);
 
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
 
 
 	glMatrixMode(GL_MODELVIEW);
+	//glutFullScreen();
 
 }
 
@@ -122,10 +131,16 @@ void HelloGL::Update()
 	glutPostRedisplay();
 }
 
+bool showMenu = true;
+
 void HelloGL::Keyboard(unsigned char key, int x, int y)
 {
 	switch (key)
 	{
+		case 'x': {
+			showMenu = !showMenu;
+			break;
+		}
 		case 'w': {
 			curCamera->eye.y--;
 			break;
@@ -148,8 +163,44 @@ void HelloGL::Keyboard(unsigned char key, int x, int y)
 	}
 }
 
+void ShowExampleAppSimpleOverlay()
+{
+	if (showMenu)
+	{
+
+		const float DISTANCE = 10.0f;
+		static int corner = 1;
+		ImGuiIO& io = ImGui::GetIO();
+		if (corner != -1)
+		{
+			ImVec2 window_pos = ImVec2((corner & 1) ? io.DisplaySize.x - DISTANCE : DISTANCE, (corner & 2) ? io.DisplaySize.y - DISTANCE : DISTANCE);
+			ImVec2 window_pos_pivot = ImVec2((corner & 1) ? 1.0f : 0.0f, (corner & 2) ? 1.0f : 0.0f);
+			ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always, window_pos_pivot);
+		}
+		ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
+		if (ImGui::Begin("Example: Simple overlay", &showMenu, (corner != -1 ? ImGuiWindowFlags_NoMove : 0) | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav))
+		{
+			ImGui::Text("Simple overlay\n" "in the corner of the screen.");
+			ImGui::Separator();
+			if (ImGui::IsMousePosValid())
+				ImGui::Text("Mouse Position: (%.1f,%.1f)", io.MousePos.x, io.MousePos.y);
+			else
+				ImGui::Text("Mouse Position: <invalid>");
+		}
+		ImGui::End();
+
+	}
+}
+
 void HelloGL::Display()
 {
+
+	ImGui_ImplOpenGL2_NewFrame();
+	ImGui_ImplGLUT_NewFrame();
+
+	ShowExampleAppSimpleOverlay();
+	ImGui::Render();
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	for (SceneObject* n : objects)
 	{
@@ -157,11 +208,17 @@ void HelloGL::Display()
 			n->Draw();
 		glPopMatrix();
 	}
+	ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
 	glFlush();
 	glutSwapBuffers();
+
 }
 
 HelloGL::~HelloGL(void)
 {
+
+	ImGui_ImplOpenGL2_Shutdown();
+	ImGui_ImplGLUT_Shutdown();
+	ImGui::DestroyContext();
 
 }

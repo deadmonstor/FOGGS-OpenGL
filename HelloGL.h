@@ -7,6 +7,10 @@
 #include "GL\freeglut.h"
 #include "GLUTCallbacks.h"
 
+#include "imgui.h"
+#include "imgui_impl_glut.h"
+#include "imgui_impl_opengl2.h"
+
 #ifndef _Texture2D
 #include "Texture2D.h"
 #endif
