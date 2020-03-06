@@ -21,6 +21,13 @@ HelloGL::HelloGL(int argc, char* argv[])
 	ImGui_ImplGLUT_InstallFuncs();
 	ImGui_ImplOpenGL2_Init();
 
+	glutDisplayFunc(GLUTCallbacks::Display);
+	glutKeyboardFunc(GLUTCallbacks::Keyboard);
+	glutKeyboardUpFunc(GLUTCallbacks::releaseKeyboard);
+
+	glutMouseFunc(GLUTCallbacks::mouseButton);
+	glutMotionFunc(GLUTCallbacks::mouseMove);
+
 	InitObjects();
 	InitLighting();
 
@@ -39,15 +46,12 @@ void HelloGL::InitGL(int argc, char* argv[])
 	glutInitWindowPosition(0, 0);
 	glutCreateWindow("Simple OpenGL Program");
 
-	glutDisplayFunc(GLUTCallbacks::Display);
-	glutKeyboardFunc(GLUTCallbacks::Keyboard);
-
 	glutTimerFunc(REFRESHRATE, GLUTCallbacks::Timer, REFRESHRATE);
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glViewport(0, 0, 1000, 1080);
-	gluPerspective(45, 1, 0.1f, 100.0f);
+	glViewport(0, 0, 1920, 1080);
+	gluPerspective(45,float(1920) / float(1080), 0.1f, 10000.0f);
 
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_CULL_FACE);
@@ -82,12 +86,11 @@ void HelloGL::InitObjects()
 	for (int i = 0; i < 200; i++)
 	{
 		//objects.push_back(new Pyramid(pyramidMesh, texture, ((rand() % 400) / 10.0f) - 20.0f, ((rand() % 200) / 10.0f) - 10.0f, -(rand() % 1000) / 10.0f));
-
 	}
 
 	srand(time(NULL) + 50);
 
-	for (int i = 0; i < 200; i++)
+	for (int i = 0; i < 100; i++)
 	{
 		objects.push_back(new Cube(cubeMesh, texture, ((rand() % 400) / 10.0f) - 20.0f, ((rand() % 200) / 10.0f) - 10.0f, -(rand() % 1000) / 10.0f));
 	}
@@ -118,10 +121,22 @@ void HelloGL::InitLighting()
 
 }
 
+void HelloGL::computePos(float deltaMove) {
+
+	x += deltaMove * lx * 0.1f;
+	z += deltaMove * lz * 0.1f;
+}
+
 void HelloGL::Update()
 {
+	if (deltaMove)
+		computePos(deltaMove);
+
 	glLoadIdentity();
-	gluLookAt(curCamera->eye.x, curCamera->eye.y, curCamera->eye.z, curCamera->center.x, curCamera->center.y, curCamera->center.z, curCamera->up.x, curCamera->up.y, curCamera->up.z);
+	gluLookAt(x, 1.0f, z,
+		x + lx, 1.0f, z + lz,
+		0.0f, 1.0f, 0.0f);
+	
 	glLightfv(GL_LIGHT0, GL_AMBIENT, &(_lightData->ambient.x));
 	glLightfv(GL_LIGHT0, GL_POSITION, &(_lightPosition->x));
 
@@ -135,35 +150,60 @@ bool showMenu = true;
 
 void HelloGL::Keyboard(unsigned char key, int x, int y)
 {
-	switch (key)
-	{
-		case 'x': {
-			showMenu = !showMenu;
-			break;
-		}
-		case 'w': {
-			curCamera->eye.y--;
-			break;
+	if (!ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow)) {
+		
+		switch (key) {
+			case 'w': deltaMove = 0.5f; break;
+			case 's': deltaMove = -0.5f; break;
+			case 'x': showMenu = !showMenu; break;
 		}
 
-		case 'a': {
-			curCamera->eye.x++;
-			break;
-		}
-
-		case 's': {
-			curCamera->eye.y++;
-			break;
-		}
-
-		case 'd': {
-			curCamera->eye.x--;
-			break;
-		}
 	}
+
+	ImGui_ImplGLUT_KeyboardFunc(key, x, y);
 }
 
-void ShowExampleAppSimpleOverlay()
+void HelloGL::releaseKeyboard(unsigned char key, int x, int y)
+{
+	switch (key) {
+		case 'w': if (deltaMove == 0.5f) deltaMove = 0; break;
+		case 's':  if (deltaMove == -0.5f) deltaMove = 0; break;
+	}
+
+
+	ImGui_ImplGLUT_KeyboardUpFunc(key, x, y);
+}
+
+void HelloGL::mouseButton(int button, int state, int x, int y)
+{	
+	if (!ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow) && button == GLUT_LEFT_BUTTON) {
+
+		if (state == GLUT_UP) {
+			angle += deltaAngle;
+			xOrigin = -1;
+		}
+		else {
+			xOrigin = x;
+		}
+	}
+
+	ImGui_ImplGLUT_MouseFunc(button, state, x, y);
+}
+
+void HelloGL::mouseMove(int x, int y)
+{
+	if (!ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow) && xOrigin >= 0)
+	{
+		deltaAngle = (x - xOrigin) * 0.002f;
+
+		lx = sin(angle + deltaAngle);
+		lz = -cos(angle + deltaAngle);
+	}
+
+	ImGui_ImplGLUT_MotionFunc(x, y);
+}
+
+void HelloGL::ShowMenu()
 {
 	if (showMenu)
 	{
@@ -178,9 +218,9 @@ void ShowExampleAppSimpleOverlay()
 			ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always, window_pos_pivot);
 		}
 		ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
-		if (ImGui::Begin("Example: Simple overlay", &showMenu, (corner != -1 ? ImGuiWindowFlags_NoMove : 0) | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav))
+		if (ImGui::Begin("Overlay", &showMenu, (corner != -1 ? ImGuiWindowFlags_NoMove : 0) | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav))
 		{
-			ImGui::Text("Simple overlay\n" "in the corner of the screen.");
+			ImGui::Text("Mouse Position");
 			ImGui::Separator();
 			if (ImGui::IsMousePosValid())
 				ImGui::Text("Mouse Position: (%.1f,%.1f)", io.MousePos.x, io.MousePos.y);
@@ -189,6 +229,50 @@ void ShowExampleAppSimpleOverlay()
 		}
 		ImGui::End();
 
+
+		ImGui::SetNextWindowSize(ImVec2(500, 440), ImGuiCond_FirstUseEver);
+		if (ImGui::Begin("Edit objects", &showMenu, ImGuiWindowFlags_MenuBar))
+		{
+			// left
+			static int selected = 0;
+			ImGui::BeginChild("left pane", ImVec2(150, 0), true);
+			for (int i = 0; i < objects.size(); i++)
+			{
+				char label[128];
+				char* curName = objects.at(i)->name;
+				bool isEmpty = strlen(curName) == 0;
+
+				sprintf_s(label, "Object: %s", isEmpty ? std::to_string(i).c_str() : curName);
+				if (ImGui::Selectable(label, selected == i))
+					selected = i;
+			}
+			ImGui::EndChild();
+			ImGui::SameLine();
+
+			ImGui::BeginGroup();
+			ImGui::BeginChild("item view", ImVec2(0, -ImGui::GetFrameHeightWithSpacing()));
+			ImGui::Separator();
+			if (ImGui::BeginTabBar("##Tabs", ImGuiTabBarFlags_None))
+			{
+				if (ImGui::BeginTabItem("Description"))
+				{
+
+					ImGui::InputText("Name", objects.at(selected)->name, IM_ARRAYSIZE(objects.at(selected)->name) );
+
+					ImGui::InputFloat("x", &objects.at(selected)->_position.x, 0.0f, 0.0f, "%.3f");
+					ImGui::InputFloat("y", &objects.at(selected)->_position.y, 0.0f, 0.0f, "%.3f");
+					ImGui::InputFloat("z", &objects.at(selected)->_position.z, 0.0f, 0.0f, "%.3f");
+					ImGui::EndTabItem();
+				}
+				ImGui::EndTabBar();
+			}
+			ImGui::EndChild();
+			if (ImGui::Button("Revert")) {}
+			ImGui::SameLine();
+			if (ImGui::Button("Save")) {}
+			ImGui::EndGroup();
+		}
+		ImGui::End();
 	}
 }
 
@@ -198,7 +282,7 @@ void HelloGL::Display()
 	ImGui_ImplOpenGL2_NewFrame();
 	ImGui_ImplGLUT_NewFrame();
 
-	ShowExampleAppSimpleOverlay();
+	ShowMenu();
 	ImGui::Render();
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

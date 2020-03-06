@@ -49,6 +49,7 @@ class HelloGL
 		void Update();
 
 		void Keyboard(unsigned char key, int x, int y);
+		void releaseKeyboard(unsigned char key, int x, int y);
 
 		~HelloGL(void);
 
@@ -56,9 +57,25 @@ class HelloGL
 		void InitLighting();
 		void InitGL(int argc, char* argv[]);
 
+		void mouseButton(int button, int state, int x, int y);
+		void mouseMove(int x, int y);
+		void computePos(float deltaMove);
+
+		void ShowMenu();
+
 	private:
 		float rotation;
 		Camera* curCamera;
+		Vector3 cameraPos = Vector3(0.0f, 0.0f, 0.0f);
+
+		float angle = 0.0f;
+		float lx = 0.0f, lz = -1.0f;
+		float x = 0.0f, z = 5.0f;
+
+		float deltaAngle = 0.0f;
+		float deltaMove = 0;
+		int xOrigin = -1;
+
 		std::vector<SceneObject*> objects;
 
 		Vector4* _lightPosition;

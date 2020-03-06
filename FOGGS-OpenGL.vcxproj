@@ -150,6 +150,7 @@
     <ClCompile Include="imgui\imgui_impl_opengl2.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="MeshLoader.cpp" />
+    <ClCompile Include="objImporter.cpp" />
     <ClCompile Include="pyramid.cpp" />
     <ClCompile Include="SceneObject.cpp" />
     <ClCompile Include="Texture2D.cpp" />
@@ -159,6 +160,7 @@
     <ClInclude Include="GLUTCallbacks.h" />
     <ClInclude Include="HelloGL.h" />
     <ClInclude Include="MeshLoader.h" />
+    <ClInclude Include="objImporter.h" />
     <ClInclude Include="pyramid.h" />
     <ClInclude Include="SceneObject.h" />
     <ClInclude Include="Structures.h" />

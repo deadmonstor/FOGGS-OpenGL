@@ -19,6 +19,11 @@
 		virtual void Update();
 		virtual void Draw();
 
+		GLfloat _rotation = 0;
+		Vector3 _position;
+
+		char name[64];
+
 	};
 
 
