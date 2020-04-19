@@ -33,7 +33,7 @@
 
 	public:
 
-		Cube(Mesh* mesh, Texture2D* _texture, float x, float y, float z);
+		Cube(Mesh* mesh, Texture2D* _texture, float x, float y, float z, int _id);
 		~Cube();
 
 		void Draw();

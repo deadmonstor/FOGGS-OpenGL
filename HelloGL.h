@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Windows.h>
+#include <windows.h>
 #include <gl/GL.h>
 #include <gl/GLU.h>
 
@@ -69,17 +69,23 @@ class HelloGL
 		Vector3 cameraPos = Vector3(0.0f, 0.0f, 0.0f);
 
 		float angle = 0.0f;
-		float lx = 0.0f, lz = -1.0f;
-		float x = 0.0f, z = 5.0f;
+		float lx = 0.0f, ly = 0.0f, lz = -1.0f;
+		float x = 0.0f, y = 0.0f, z = 5.0f;
 
 		float deltaAngle = 0.0f;
 		float deltaMove = 0;
 		int xOrigin = -1;
+		int yOrigin = -1;
 
 		std::vector<SceneObject*> objects;
 
 		Vector4* _lightPosition;
 		lighting* _lightData;
 
+		bool shouldGetPixel;
+
+
+		// Frame buffer objects 
+		GLuint fbo, render_buf;
 
 };

@@ -18,6 +18,13 @@
 
 		virtual void Update();
 		virtual void Draw();
+		void DrawBasic();
+
+		int id;
+
+		GLint r;
+		GLint g;
+		GLint b;
 
 		GLfloat _rotation = 0;
 		Vector3 _position;

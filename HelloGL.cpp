@@ -1,4 +1,4 @@
-#include "HelloGL.h"
+﻿#include "HelloGL.h"
 
 int main(int argc, char* argv[])
 {
@@ -6,6 +6,8 @@ int main(int argc, char* argv[])
 
 	return 0;
 }
+
+GLfloat xpos, ypos;
 
 HelloGL::HelloGL(int argc, char* argv[])
 {
@@ -26,7 +28,10 @@ HelloGL::HelloGL(int argc, char* argv[])
 	glutKeyboardUpFunc(GLUTCallbacks::releaseKeyboard);
 
 	glutMouseFunc(GLUTCallbacks::mouseButton);
-	glutMotionFunc(GLUTCallbacks::mouseMove);
+	glutPassiveMotionFunc(GLUTCallbacks::mouseMove);
+
+	glutSetCursor(GLUT_CURSOR_NONE);
+	//glutIdleFunc(GLUTCallbacks::Display);
 
 	InitObjects();
 	InitLighting();
@@ -41,7 +46,7 @@ void HelloGL::InitGL(int argc, char* argv[])
 
 	glutInit(&argc, argv);
 
-	glutInitDisplayMode(GLUT_DOUBLE);
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
 	glutInitWindowSize(1920, 1080);
 	glutInitWindowPosition(0, 0);
 	glutCreateWindow("Simple OpenGL Program");
@@ -60,10 +65,6 @@ void HelloGL::InitGL(int argc, char* argv[])
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
 
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
-
-
 	glMatrixMode(GL_MODELVIEW);
 	//glutFullScreen();
 
@@ -76,23 +77,23 @@ void HelloGL::InitObjects()
 	curCamera->eye.z = 5.0f; curCamera->up.y = 1.0f;
 	//curCamera->eye.x = 5.0f; curCamera->eye.y = 5.0f; curCamera->eye.z = -5.0f;
 
-	Mesh* cubeMesh = MeshLoader::Load((char *)"cube.txt");
-	Mesh* pyramidMesh = MeshLoader::Load((char*)"pyramid.txt");
+	Mesh* cubeMesh = MeshLoader::Load((char *)"objects/cube.txt");
+	Mesh* pyramidMesh = MeshLoader::Load((char*)"objects/pyramid.txt");
 
 	Texture2D* texture = new Texture2D();
 	texture->Load((char*)"Penguins.raw", 512, 512);
 
 
-	for (int i = 0; i < 200; i++)
+	for (int i = 0; i < 10; i++)
 	{
-		//objects.push_back(new Pyramid(pyramidMesh, texture, ((rand() % 400) / 10.0f) - 20.0f, ((rand() % 200) / 10.0f) - 10.0f, -(rand() % 1000) / 10.0f));
+		objects.push_back(new Pyramid(pyramidMesh, texture, ((rand() % 400) / 10.0f) - 20.0f, ((rand() % 200) / 10.0f) - 10.0f, -(rand() % 1000) / 10.0f, objects.size()));
 	}
 
 	srand(time(NULL) + 50);
 
 	for (int i = 0; i < 100; i++)
 	{
-		objects.push_back(new Cube(cubeMesh, texture, ((rand() % 400) / 10.0f) - 20.0f, ((rand() % 200) / 10.0f) - 10.0f, -(rand() % 1000) / 10.0f));
+		objects.push_back(new Cube(cubeMesh, texture, ((rand() % 400) / 10.0f) - 20.0f, ((rand() % 200) / 10.0f) - 10.0f, -(rand() % 1000) / 10.0f, objects.size()));
 	}
 
 }
@@ -124,6 +125,7 @@ void HelloGL::InitLighting()
 void HelloGL::computePos(float deltaMove) {
 
 	x += deltaMove * lx * 0.1f;
+	y += deltaMove * lx * 0.1f;
 	z += deltaMove * lz * 0.1f;
 }
 
@@ -133,10 +135,11 @@ void HelloGL::Update()
 		computePos(deltaMove);
 
 	glLoadIdentity();
-	gluLookAt(x, 1.0f, z,
-		x + lx, 1.0f, z + lz,
+
+	gluLookAt(x, y, z,
+		x + lx, y - ly, z + lz,
 		0.0f, 1.0f, 0.0f);
-	
+
 	glLightfv(GL_LIGHT0, GL_AMBIENT, &(_lightData->ambient.x));
 	glLightfv(GL_LIGHT0, GL_POSITION, &(_lightPosition->x));
 
@@ -167,7 +170,7 @@ void HelloGL::releaseKeyboard(unsigned char key, int x, int y)
 {
 	switch (key) {
 		case 'w': if (deltaMove == 0.5f) deltaMove = 0; break;
-		case 's':  if (deltaMove == -0.5f) deltaMove = 0; break;
+		case 's': if (deltaMove == -0.5f) deltaMove = 0; break;
 	}
 
 
@@ -176,29 +179,85 @@ void HelloGL::releaseKeyboard(unsigned char key, int x, int y)
 
 void HelloGL::mouseButton(int button, int state, int x, int y)
 {	
-	if (!ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow) && button == GLUT_LEFT_BUTTON) {
-
-		if (state == GLUT_UP) {
-			angle += deltaAngle;
-			xOrigin = -1;
-		}
-		else {
-			xOrigin = x;
-		}
+	if (!ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow) && state == GLUT_DOWN && button == GLUT_LEFT_BUTTON)
+	{
+		shouldGetPixel = true;
 	}
 
 	ImGui_ImplGLUT_MouseFunc(button, state, x, y);
 }
 
+bool warping = false;
+int test1 = 0;
+int test2 = 0;
 void HelloGL::mouseMove(int x, int y)
 {
-	if (!ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow) && xOrigin >= 0)
-	{
-		deltaAngle = (x - xOrigin) * 0.002f;
 
-		lx = sin(angle + deltaAngle);
-		lz = -cos(angle + deltaAngle);
+	if (!ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow) && !warping)
+	{
+
+		int useX = test1 + x;
+		int useY = test2 + y;
+
+		deltaAngle = (useX - angle) * 0.002f;
+
+		lx = sin(deltaAngle);
+		lz = -cos(deltaAngle);
+
+		deltaAngle = (useY * 0.002f);
+		ly = deltaAngle;
+
+		
+		// Rewrite this because it works because look at it. 2am here
+		if (x == 0) {
+			warping = true;
+			test1 -= 1919 / 2;
+			glutWarpPointer(1920 / 2, y);
+		}
+		if (x == 1919) {
+			warping = true;
+			test1 += 1919 / 2;
+			glutWarpPointer(1920 / 2, y);
+		}
+		if (y == 0) {
+			warping = true;
+			test2 -= 1079 / 2;
+			glutWarpPointer(x, 1080 / 2);
+		}
+		if (y == 1079) {
+			warping = true;
+			test2 += 1079 / 2;
+			glutWarpPointer(x, 1080 / 2);
+		}
+
 	}
+	else if (warping) 
+	{
+		warping = false;
+	}
+
+	HWND hwnd = GetForegroundWindow();
+	RECT rect;
+	GetClientRect(hwnd, &rect);
+
+	POINT ul;
+	ul.x = rect.left;
+	ul.y = rect.top;
+
+	POINT lr;
+	lr.x = rect.right;
+	lr.y = rect.bottom;
+
+	MapWindowPoints(hwnd, nullptr, &ul, 1);
+	MapWindowPoints(hwnd, nullptr, &lr, 1);
+
+	rect.left = ul.x;
+	rect.top = ul.y;
+
+	rect.right = lr.x;
+	rect.bottom = lr.y;
+
+	ClipCursor(&rect);
 
 	ImGui_ImplGLUT_MotionFunc(x, y);
 }
@@ -254,7 +313,7 @@ void HelloGL::ShowMenu()
 			ImGui::Separator();
 			if (ImGui::BeginTabBar("##Tabs", ImGuiTabBarFlags_None))
 			{
-				if (ImGui::BeginTabItem("Description"))
+				if (objects.size() != 0 && ImGui::BeginTabItem("Description"))
 				{
 
 					ImGui::InputText("Name", objects.at(selected)->name, IM_ARRAYSIZE(objects.at(selected)->name) );
@@ -262,6 +321,12 @@ void HelloGL::ShowMenu()
 					ImGui::InputFloat("x", &objects.at(selected)->_position.x, 0.0f, 0.0f, "%.3f");
 					ImGui::InputFloat("y", &objects.at(selected)->_position.y, 0.0f, 0.0f, "%.3f");
 					ImGui::InputFloat("z", &objects.at(selected)->_position.z, 0.0f, 0.0f, "%.3f");
+
+					ImGui::Text("ID %i", objects.at(selected)->id);
+
+					ImGui::InputInt("R", &objects.at(selected)->r);
+					ImGui::InputInt("G", &objects.at(selected)->g);
+					ImGui::InputInt("B", &objects.at(selected)->b);
 					ImGui::EndTabItem();
 				}
 				ImGui::EndTabBar();
@@ -282,19 +347,56 @@ void HelloGL::Display()
 	ImGui_ImplOpenGL2_NewFrame();
 	ImGui_ImplGLUT_NewFrame();
 
-	ShowMenu();
-	ImGui::Render();
-
+	glClearColor(1, 1, 1, 1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+
 	for (SceneObject* n : objects)
 	{
 		glPushMatrix();
-			n->Draw();
+			n->DrawBasic();
 		glPopMatrix();
 	}
+
+	ShowMenu();
+	ImGui::Render();
+
 	ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
+
 	glFlush();
 	glutSwapBuffers();
+
+	if (shouldGetPixel)
+	{
+		GLdouble window_width = glutGet(GLUT_WINDOW_WIDTH);
+		GLdouble window_height = glutGet(GLUT_WINDOW_HEIGHT);
+
+		GLubyte color[4];
+
+		glReadPixels(window_width / 2, window_height / 2 , 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, color);
+
+		int pickedID =
+			color[0] +
+			color[1] * 256 +
+			color[2] * 256 * 256;
+
+		printf("Clicked on pixel %f, %f, R: %i G: %i B: %i, ID: %i\n",
+			xpos, ypos, color[0], color[1], color[2], pickedID);
+
+		for (int i = 0; i < objects.size(); i++)
+		{
+			SceneObject* n = objects.at(i);
+
+			if (n->id == pickedID)
+			{
+				objects.erase(objects.begin() + i);
+				delete n;
+				break;
+			}
+		}
+
+		shouldGetPixel = false;
+	}
 
 }
 

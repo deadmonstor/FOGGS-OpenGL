@@ -2,8 +2,14 @@
 
 using namespace std;
 
-Pyramid::Pyramid(Mesh* mesh, Texture2D* text, float x, float y, float z) : SceneObject(mesh)
+Pyramid::Pyramid(Mesh* mesh, Texture2D* text, float x, float y, float z, int _id) : SceneObject(mesh)
 {
+
+	id = _id;
+
+	r = ((_id & 0x000000FF) >> 0);
+	g = ((_id & 0x0000FF00) >> 8);
+	b = ((_id & 0x00FF0000) >> 16);
 
 	_position = Vector3(x, y, z);
 	_texture = text;

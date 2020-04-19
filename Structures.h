@@ -41,6 +41,17 @@
 			return c_P;
 		}
 
+		Vector3 inverse()
+		{
+			Vector3 c_P;
+
+			c_P.x = -x;
+			c_P.y = -y;
+			c_P.z = -z;
+
+			return c_P;
+		}
+
 	};
 
 	struct Vector4

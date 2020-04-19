@@ -28,13 +28,11 @@
 	class Pyramid : public SceneObject
 	{
 	private:
-		GLfloat _rotation = 0;
-		Vector3 _position;
 		Texture2D* _texture;
 
 	public:
 
-		Pyramid(Mesh* mesh, Texture2D* text, float x, float y, float z);
+		Pyramid(Mesh* mesh, Texture2D* text, float x, float y, float z, int _id);
 		~Pyramid();
 
 		void Draw();
