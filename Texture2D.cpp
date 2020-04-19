@@ -4,7 +4,8 @@ using namespace std;
 
 Texture2D::Texture2D()
 {
-
+	_width = 0;
+	_height = 0;
 }
 
 Texture2D::~Texture2D()

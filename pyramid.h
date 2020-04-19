@@ -35,8 +35,8 @@
 		Pyramid(Mesh* mesh, Texture2D* text, float x, float y, float z, int _id);
 		~Pyramid();
 
-		void Draw();
-		void Update();
+		void Draw() override;
+		void Update() override;
 	};
 
 #endif // !_Cube

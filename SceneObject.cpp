@@ -1,10 +1,16 @@
 #include "SceneObject.h"
 
 #include <iostream>
+#include <string>
 
 SceneObject::SceneObject(Mesh* mesh)
 {
 	_mesh = mesh;
+
+	id = 0;
+	
+	std::string mystring = "";
+	*name = *mystring.c_str();
 }
 
 SceneObject::~SceneObject()

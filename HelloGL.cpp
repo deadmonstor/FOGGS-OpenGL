@@ -16,7 +16,7 @@ HelloGL::HelloGL(int argc, char* argv[])
 
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	const ImGuiIO& io = ImGui::GetIO();
 
 	ImGui::StyleColorsDark();
 	ImGui_ImplGLUT_Init();
@@ -29,9 +29,7 @@ HelloGL::HelloGL(int argc, char* argv[])
 
 	glutMouseFunc(GLUTCallbacks::mouseButton);
 	glutPassiveMotionFunc(GLUTCallbacks::mouseMove);
-
 	glutSetCursor(GLUT_CURSOR_NONE);
-	//glutIdleFunc(GLUTCallbacks::Display);
 
 	InitObjects();
 	InitLighting();
@@ -71,11 +69,10 @@ void HelloGL::InitGL(int argc, char* argv[])
 }
 
 void HelloGL::InitObjects()
-{
+{ 
 	rotation = 0;
 	curCamera = new Camera();
 	curCamera->eye.z = 5.0f; curCamera->up.y = 1.0f;
-	//curCamera->eye.x = 5.0f; curCamera->eye.y = 5.0f; curCamera->eye.z = -5.0f;
 
 	Mesh* cubeMesh = MeshLoader::Load((char *)"objects/cube.txt");
 	Mesh* pyramidMesh = MeshLoader::Load((char*)"objects/pyramid.txt");
@@ -100,12 +97,14 @@ void HelloGL::InitObjects()
 
 void HelloGL::InitLighting()
 {
+	if (_lightPosition) delete _lightPosition;
 	_lightPosition = new Vector4();
 	_lightPosition->x = 0.0;
 	_lightPosition->y = 0.0;
 	_lightPosition->z = 1.0;
 	_lightPosition->w = 0.0;
 
+	if (_lightData) delete _lightData;
 	_lightData = new lighting();
 	_lightData->ambient.x = 0.2;
 	_lightData->ambient.y = 0.2;
@@ -269,15 +268,14 @@ void HelloGL::ShowMenu()
 
 		const float DISTANCE = 10.0f;
 		static int corner = 1;
+
 		ImGuiIO& io = ImGui::GetIO();
-		if (corner != -1)
-		{
-			ImVec2 window_pos = ImVec2((corner & 1) ? io.DisplaySize.x - DISTANCE : DISTANCE, (corner & 2) ? io.DisplaySize.y - DISTANCE : DISTANCE);
-			ImVec2 window_pos_pivot = ImVec2((corner & 1) ? 1.0f : 0.0f, (corner & 2) ? 1.0f : 0.0f);
-			ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always, window_pos_pivot);
-		}
+		ImVec2 window_pos = ImVec2(io.DisplaySize.x - DISTANCE, DISTANCE);
+		ImVec2 window_pos_pivot = ImVec2(1.0f, 0.0f);
+
+		ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always, window_pos_pivot);
 		ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
-		if (ImGui::Begin("Overlay", &showMenu, (corner != -1 ? ImGuiWindowFlags_NoMove : 0) | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav))
+		if (ImGui::Begin("Overlay", &showMenu, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav))
 		{
 			ImGui::Text("Mouse Position");
 			ImGui::Separator();

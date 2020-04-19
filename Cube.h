@@ -36,8 +36,8 @@
 		Cube(Mesh* mesh, Texture2D* _texture, float x, float y, float z, int _id);
 		~Cube();
 
-		void Draw();
-		void Update();
+		void Draw() override;
+		void Update() override;
 	};
 
 #endif // !_Cube

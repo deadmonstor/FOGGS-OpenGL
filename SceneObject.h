@@ -9,27 +9,27 @@
 
 	class SceneObject
 	{
-	protected:
-		Mesh* _mesh;
+		protected:
+			Mesh* _mesh;
 
-	public:
-		SceneObject(Mesh* mesh);
-		virtual ~SceneObject();
+		public:
+			explicit SceneObject(Mesh* mesh);
+			virtual ~SceneObject();
 
-		virtual void Update();
-		virtual void Draw();
-		void DrawBasic();
+			virtual void Update();
+			virtual void Draw();
+			void DrawBasic();
 
-		int id;
+			int id;
 
-		GLint r;
-		GLint g;
-		GLint b;
+			GLint r;
+			GLint g;
+			GLint b;
 
-		GLfloat _rotation = 0;
-		Vector3 _position;
+			GLfloat _rotation = 0;
+			Vector3 _position;
 
-		char name[64];
+			char name[64];
 
 	};
 

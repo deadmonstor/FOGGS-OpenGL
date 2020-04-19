@@ -130,6 +130,7 @@ namespace MeshLoader
 		if (!inFile.good())  
 		{
 			cerr  << "Can't open texture file " << path << endl;
+			delete mesh;
 			return nullptr;
 		}
 
