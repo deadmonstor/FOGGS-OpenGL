@@ -60,6 +60,7 @@ class mainGame
 		void mouseButton(int button, int state, int x, int y);
 		void mouseMove(int x, int y);
 		void computePos(float deltaMove);
+		void KeepCursorInBounds();
 
 		void ShowMenu();
 		void timerCheck();

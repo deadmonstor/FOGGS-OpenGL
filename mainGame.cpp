@@ -170,6 +170,7 @@ void mainGame::Update()
 		curObject->Update();
 	
 	timerCheck();
+	KeepCursorInBounds();
 	glutPostRedisplay();
 }
 
@@ -211,17 +212,17 @@ void mainGame::mouseButton(int button, int state, int x, int y)
 	ImGui_ImplGLUT_MouseFunc(button, state, x, y);
 }
 
-bool warping = false;
-int test1 = 0;
-int test2 = 0;
+bool isWarping = false;
+int mouseExtendedX = 0;
+int mouseExtendedY = 0;
 void mainGame::mouseMove(int x, int y)
 {
 
-	if (!ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow) && !warping)
+	if (!ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow) && !isWarping)
 	{
 
-		int useX = test1 + x;
-		int useY = test2 + y;
+		int useX = mouseExtendedX + x;
+		int useY = mouseExtendedY + y;
 
 		deltaAngle = (useX - angle) * 0.002f;
 
@@ -231,35 +232,68 @@ void mainGame::mouseMove(int x, int y)
 		deltaAngle = (useY * 0.002f);
 		ly = deltaAngle;
 
-		
-		// Rewrite this because it works because look at it. 2am here
+	
 		if (x == 0) {
-			warping = true;
-			test1 -= 1919 / 2;
+
+			isWarping = true;
+			mouseExtendedX -= 1919 / 2;
 			glutWarpPointer(1920 / 2, y);
+
 		}else if (x == 1919) {
-			warping = true;
-			test1 += 1919 / 2;
+
+			isWarping = true;
+			mouseExtendedX += 1919 / 2;
 			glutWarpPointer(1920 / 2, y);
+
 		}
 
 		if (y == 0) {
-			warping = true;
-			test2 -= 1079 / 2;
+
+			isWarping = true;
+			mouseExtendedY -= 1079 / 2;
 			glutWarpPointer(x, 1080 / 2);
+
 		}else if (y == 1079) {
-			warping = true;
-			test2 += 1079 / 2;
+
+			isWarping = true;
+			mouseExtendedY += 1079 / 2;
 			glutWarpPointer(x, 1080 / 2);
+
 		}
 
 	}
-	else if (warping) 
+	else if (isWarping)
 	{
-		warping = false;
+		isWarping = false;
 	}
 
+	ImGui_ImplGLUT_MotionFunc(x, y);
+}
+
+void GetWindowString(HWND hwnd, std::wstring& s) {
+	const DWORD TITLE_SIZE = 1024;
+	WCHAR windowTitle[TITLE_SIZE];
+
+	GetWindowTextW(hwnd, windowTitle, TITLE_SIZE);
+
+	int length = ::GetWindowTextLength(hwnd);
+	wstring title(&windowTitle[0]);
+
+	s = title;
+}
+
+void mainGame::KeepCursorInBounds()
+{
 	HWND hwnd = GetForegroundWindow();
+	
+	std::wstring x;
+	GetWindowString(hwnd, x);
+
+	if (x != L"Joshua Mobley's Game")
+	{
+		return;
+	}
+
 	RECT rect;
 	GetClientRect(hwnd, &rect);
 
@@ -281,8 +315,6 @@ void mainGame::mouseMove(int x, int y)
 	rect.bottom = lr.y;
 
 	ClipCursor(&rect);
-
-	ImGui_ImplGLUT_MotionFunc(x, y);
 }
 
 void mainGame::ShowMenu()
