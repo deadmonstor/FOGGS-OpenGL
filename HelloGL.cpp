@@ -78,7 +78,7 @@ void HelloGL::InitObjects()
 	Mesh* pyramidMesh = MeshLoader::Load((char*)"objects/pyramid.txt");
 
 	Texture2D* texture = new Texture2D();
-	texture->Load((char*)"Penguins.raw", 512, 512);
+	texture->Load((char*)"images/Penguins.raw", 512, 512);
 
 
 	for (int i = 0; i < 10; i++)
@@ -212,18 +212,17 @@ void HelloGL::mouseMove(int x, int y)
 			warping = true;
 			test1 -= 1919 / 2;
 			glutWarpPointer(1920 / 2, y);
-		}
-		if (x == 1919) {
+		}else if (x == 1919) {
 			warping = true;
 			test1 += 1919 / 2;
 			glutWarpPointer(1920 / 2, y);
 		}
+
 		if (y == 0) {
 			warping = true;
 			test2 -= 1079 / 2;
 			glutWarpPointer(x, 1080 / 2);
-		}
-		if (y == 1079) {
+		}else if (y == 1079) {
 			warping = true;
 			test2 += 1079 / 2;
 			glutWarpPointer(x, 1080 / 2);
@@ -360,6 +359,45 @@ void HelloGL::Display()
 	ImGui::Render();
 
 	ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
+
+	//Switch to our projection mode
+	glMatrixMode(GL_PROJECTION);
+	//Save the rest
+	glPushMatrix();
+	//Start fresh
+	glLoadIdentity();
+	//Goto ortho mode
+	gluOrtho2D(0, 1920, 0, 1080);
+	//Flipp
+	glScalef(1, -1, 1);
+	glTranslatef(0, -1080, 0);
+	//Time to draw
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glLoadIdentity();
+	//Draw
+
+	int widthcenter = (1920 / 2); 
+	int heightcenter = (1080 / 2);
+	float sizeOfCrosshair = 3.0f;
+
+
+	glBegin(GL_QUADS);
+		glColor3ub(0,0,0);
+		glVertex2f(widthcenter + sizeOfCrosshair, heightcenter + sizeOfCrosshair);
+		glVertex2f(widthcenter + sizeOfCrosshair, heightcenter - sizeOfCrosshair);
+		glVertex2f(widthcenter - sizeOfCrosshair, heightcenter - sizeOfCrosshair);
+		glVertex2f(widthcenter - sizeOfCrosshair, heightcenter + sizeOfCrosshair);
+	glEnd();
+	glPopMatrix();
+
+	//Switch back to our projection mode
+	glMatrixMode(GL_PROJECTION);
+	//Finish our calls above
+	glPopMatrix();
+	//Switch back to our model matrix to continue with out 3D scene
+	glMatrixMode(GL_MODELVIEW);
+
 
 	glFlush();
 	glutSwapBuffers();
