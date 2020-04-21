@@ -1,144 +1,150 @@
 #include "MeshLoader.h"
-using namespace std;
 
-namespace MeshLoader
+MeshLoader* MeshLoader::m_Instance = NULL;
+
+MeshLoader* MeshLoader::Instance()
 {
-	vector<string> whiteSpaceRegex(string line)
+	if (!m_Instance)
+		m_Instance = new MeshLoader();
+
+	return m_Instance;
+}
+
+vector<string> MeshLoader::whiteSpaceRegex(string line)
+{
+
+	regex ws_re("(\ )+");
+	vector<string> result{
+		sregex_token_iterator(line.begin(), line.end(), ws_re, -1), {}
+	};
+
+
+	return result;
+}
+
+void MeshLoader::LoadVertices(ifstream& inFile, Mesh& mesh)
+{
+
+	vector<string> result;
+	string line;
+	getline(inFile, line);
+
+	mesh.numVertices = stoi(line);
+	mesh.indexedVertices = new Vertex[mesh.numVertices];
+
+	for (int i = 0; i < mesh.numVertices; i++)
 	{
-
-		regex ws_re("(\ )+");
-		vector<string> result{
-			sregex_token_iterator(line.begin(), line.end(), ws_re, -1), {}
-		};
-
-
-		return result;
-	}
-
-	void LoadVertices(ifstream& inFile, Mesh& mesh)
-	{
-
-		vector<string> result;
-		string line;
 		getline(inFile, line);
 
-		mesh.numVertices = stoi(line);
-		mesh.indexedVertices = new Vertex[mesh.numVertices];
+		result = whiteSpaceRegex(line);
 
-		for (int i = 0; i < mesh.numVertices; i++)
+		if (result.size() == 3)
 		{
-			getline(inFile, line);
-
-			result = whiteSpaceRegex(line);
-
-			if (result.size() == 3)
-			{
-				mesh.indexedVertices[i].x = stof(result[0]);
-				mesh.indexedVertices[i].y = stof(result[1]);
-				mesh.indexedVertices[i].z = stof(result[2]);
-			}
-
+			mesh.indexedVertices[i].x = stof(result[0]);
+			mesh.indexedVertices[i].y = stof(result[1]);
+			mesh.indexedVertices[i].z = stof(result[2]);
 		}
+
 	}
+}
 
-	void LoadNormals(ifstream& inFile, Mesh& mesh)
+void MeshLoader::LoadNormals(ifstream& inFile, Mesh& mesh)
+{
+	vector<string> result;
+	string line;
+
+	getline(inFile, line);
+
+	mesh.numNormals = stoi(line);
+	mesh.indexedNormals = new Vector3[mesh.numNormals];
+
+	for (int i = 0; i < mesh.numNormals; i++)
 	{
-		vector<string> result;
-		string line;
-
 		getline(inFile, line);
 
-		mesh.numNormals = stoi(line);
-		mesh.indexedNormals = new Vector3[mesh.numNormals];
+		result = whiteSpaceRegex(line);
 
-		for (int i = 0; i < mesh.numNormals; i++)
+		if (result.size() == 3)
 		{
-			getline(inFile, line);
-
-			result = whiteSpaceRegex(line);
-
-			if (result.size() == 3)
-			{
-				mesh.indexedNormals[i].x = stof(result[0]);
-				mesh.indexedNormals[i].y = stof(result[1]);
-				mesh.indexedNormals[i].z = stof(result[2]);
-			}
-
+			mesh.indexedNormals[i].x = stof(result[0]);
+			mesh.indexedNormals[i].y = stof(result[1]);
+			mesh.indexedNormals[i].z = stof(result[2]);
 		}
+
 	}
+}
 
-	void LoadUVs(ifstream& inFile, Mesh& mesh)
+void MeshLoader::LoadUVs(ifstream& inFile, Mesh& mesh)
+{
+	vector<string> result;
+	string line;
+
+	getline(inFile, line);
+
+	mesh.numTexCoords = stoi(line);
+	mesh.TexCoords = new TexCoord[mesh.numTexCoords];
+
+	for (int i = 0; i < mesh.numTexCoords; i++)
 	{
-		vector<string> result;
-		string line;
-
 		getline(inFile, line);
 
-		mesh.numTexCoords = stoi(line);
-		mesh.TexCoords = new TexCoord[mesh.numTexCoords];
+		result = whiteSpaceRegex(line);
 
-		for (int i = 0; i < mesh.numTexCoords; i++)
+		if (result.size() == 2)
 		{
-			getline(inFile, line);
-
-			result = whiteSpaceRegex(line);
-
-			if (result.size() == 2)
-			{
-				mesh.TexCoords[i].u = stof(result[0]);
-				mesh.TexCoords[i].v = stof(result[1]);
-			}
-
+			mesh.TexCoords[i].u = stof(result[0]);
+			mesh.TexCoords[i].v = stof(result[1]);
 		}
+
 	}
+}
 
-	void LoadIndices(ifstream& inFile, Mesh& mesh)
+void MeshLoader::LoadIndices(ifstream& inFile, Mesh& mesh)
+{
+
+	vector<string> result;
+	string line;
+	getline(inFile, line);
+
+	mesh.numIndices = stoi(line);
+	mesh.indices = new GLushort[mesh.numIndices];
+
+	for (int i = 0; i < mesh.numIndices; i += 3)
 	{
-
-		vector<string> result;
-		string line;
 		getline(inFile, line);
 
-		mesh.numIndices = stoi(line);
-		mesh.indices = new GLushort[mesh.numIndices];
+		result = whiteSpaceRegex(line);
 
-		for (int i = 0; i < mesh.numIndices; i += 3)
+		if (result.size() == 3)
 		{
-			getline(inFile, line);
 
-			result = whiteSpaceRegex(line);
-
-			if (result.size() == 3)
-			{
-
-				mesh.indices[i] = stoi(result[0]);
-				mesh.indices[i + 1] = stoi(result[1]);
-				mesh.indices[i + 2] = stoi(result[2]);
-			}
-
+			mesh.indices[i] = stoi(result[0]);
+			mesh.indices[i + 1] = stoi(result[1]);
+			mesh.indices[i + 2] = stoi(result[2]);
 		}
-	}
 
-	Mesh* MeshLoader::Load(char* path)
+	}
+}
+
+Mesh* MeshLoader::Load(char* path)
+{
+	Mesh* mesh = new Mesh();
+
+	ifstream inFile;
+
+	inFile.open(path);
+
+	if (!inFile.good())  
 	{
-		Mesh* mesh = new Mesh();
-
-		ifstream inFile;
-
-		inFile.open(path);
-
-		if (!inFile.good())  
-		{
-			cerr  << "Can't open texture file " << path << endl;
-			delete mesh;
-			return nullptr;
-		}
-
-		LoadVertices(inFile, *mesh);
-		LoadUVs(inFile, *mesh);
-		LoadNormals(inFile, *mesh);
-		LoadIndices(inFile, *mesh);
-
-		return mesh;
+		cerr  << "Can't open texture file " << path << endl;
+		delete mesh;
+		return nullptr;
 	}
+
+	LoadVertices(inFile, *mesh);
+	LoadUVs(inFile, *mesh);
+	LoadNormals(inFile, *mesh);
+	LoadIndices(inFile, *mesh);
+
+	return mesh;
 }

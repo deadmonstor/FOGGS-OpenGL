@@ -84,8 +84,4 @@ class mainGame
 
 		bool shouldGetPixel;
 
-
-		// Frame buffer objects 
-		GLuint fbo, render_buf;
-
 };

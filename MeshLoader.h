@@ -13,12 +13,22 @@
 #ifndef _hStructs
 #include "Structures.h"
 #endif
+using namespace std;
 
-	namespace MeshLoader
+	class MeshLoader
 	{
-		Mesh* Load(char* path);
+		public:
+				Mesh* Load(char* path);
+				static MeshLoader* Instance();
+		
+		private:
+			vector<string> whiteSpaceRegex(string line);
+			void LoadVertices(ifstream& inFile, Mesh& mesh);
+			void LoadNormals(ifstream& inFile, Mesh& mesh);
+			void LoadUVs(ifstream& inFile, Mesh& mesh);
+			void LoadIndices(ifstream& inFile, Mesh& mesh);
+			static MeshLoader* m_Instance;
+
 	};
-
-
 
 #endif // !_MeshLoader

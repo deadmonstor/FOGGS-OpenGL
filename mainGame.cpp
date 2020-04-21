@@ -74,8 +74,8 @@ void mainGame::InitObjects()
 	curCamera = new Camera();
 	curCamera->eye.z = 5.0f; curCamera->up.y = 1.0f;
 
-	Mesh* cubeMesh = MeshLoader::Load((char *)"objects/cube.txt");
-	Mesh* pyramidMesh = MeshLoader::Load((char*)"objects/pyramid.txt");
+	Mesh* cubeMesh = MeshLoader::Instance()->Load((char *)"objects/cube.txt");
+	Mesh* pyramidMesh = MeshLoader::Instance()->Load((char*)"objects/pyramid.txt");
 
 	Texture2D* texture = new Texture2D();
 	texture->Load((char*)"images/Penguins.raw", 512, 512);
