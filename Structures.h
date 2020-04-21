@@ -24,9 +24,10 @@
 		Vector4(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
 	};
 
-	struct Camera
+	class Camera
 	{
-		Vector3 eye, center, up;
+		public:
+			Vector3 eye, center, up;
 	};
 
 	struct Color
