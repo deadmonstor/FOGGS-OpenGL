@@ -63,6 +63,9 @@
     <ClCompile Include="pyramid.cpp">
       <Filter>Source Files\objects</Filter>
     </ClCompile>
+    <ClCompile Include="highScores.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLUTCallbacks.h">
@@ -88,6 +91,9 @@
     </ClInclude>
     <ClInclude Include="Cube.h">
       <Filter>Header Files\objects</Filter>
+    </ClInclude>
+    <ClInclude Include="highScores.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

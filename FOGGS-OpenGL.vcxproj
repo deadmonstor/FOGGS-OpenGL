@@ -152,6 +152,7 @@
     <ClCompile Include="MeshLoader.cpp" />
     <ClCompile Include="pyramid.cpp" />
     <ClCompile Include="SceneObject.cpp" />
+    <ClCompile Include="highScores.cpp" />
     <ClCompile Include="Texture2D.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -161,6 +162,7 @@
     <ClInclude Include="MeshLoader.h" />
     <ClInclude Include="pyramid.h" />
     <ClInclude Include="SceneObject.h" />
+    <ClInclude Include="highScores.h" />
     <ClInclude Include="Structures.h" />
     <ClInclude Include="Texture2D.h" />
   </ItemGroup>

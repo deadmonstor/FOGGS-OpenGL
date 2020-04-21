@@ -35,6 +35,10 @@
 #include "Structures.h"
 #endif
 
+#ifndef _hhighScores
+#include "highScores.h"
+#endif
+
 #include <vector>
 
 #define REFRESHRATE 16

@@ -174,13 +174,13 @@ void mainGame::Update()
 	glutPostRedisplay();
 }
 
-bool showMenu = true;
+bool showMenu = false;
 
 void mainGame::Keyboard(unsigned char key, int x, int y)
 {
 	if (!ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow)) {
 		
-		switch (key) {
+		switch (tolower(key)) {
 			case 'w': deltaMove = 0.5f; break;
 			case 's': deltaMove = -0.5f; break;
 			case 'x': showMenu = !showMenu; break;
@@ -193,7 +193,7 @@ void mainGame::Keyboard(unsigned char key, int x, int y)
 
 void mainGame::releaseKeyboard(unsigned char key, int x, int y)
 {
-	switch (key) {
+	switch (tolower(key)) {
 		case 'w': if (deltaMove == 0.5f) deltaMove = 0; break;
 		case 's': if (deltaMove == -0.5f) deltaMove = 0; break;
 	}
@@ -319,30 +319,29 @@ void mainGame::KeepCursorInBounds()
 
 void mainGame::ShowMenu()
 {
+
+	const float DISTANCE = 10.0f;
+	static int corner = 1;
+
+	ImGuiIO& io = ImGui::GetIO();
+	ImVec2 window_pos = ImVec2(io.DisplaySize.x - DISTANCE, DISTANCE);
+	ImVec2 window_pos_pivot = ImVec2(1.0f, 0.0f);
+
+	ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always, window_pos_pivot);
+	ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
+	if (ImGui::Begin("Overlay", &showMenu, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav))
+	{
+		ImGui::Text("Current Score + Mouse Position");
+		ImGui::Separator();
+		if (ImGui::IsMousePosValid())
+			ImGui::Text("Mouse Position: (%.1f,%.1f) \nCurrent Score: %i", io.MousePos.x, io.MousePos.y, highScores::Instance()->getScore());
+		else
+			ImGui::Text("Mouse Position: <invalid>");
+	}
+	ImGui::End();
+
 	if (showMenu)
 	{
-
-		const float DISTANCE = 10.0f;
-		static int corner = 1;
-
-		ImGuiIO& io = ImGui::GetIO();
-		ImVec2 window_pos = ImVec2(io.DisplaySize.x - DISTANCE, DISTANCE);
-		ImVec2 window_pos_pivot = ImVec2(1.0f, 0.0f);
-
-		ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always, window_pos_pivot);
-		ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
-		if (ImGui::Begin("Overlay", &showMenu, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav))
-		{
-			ImGui::Text("Mouse Position");
-			ImGui::Separator();
-			if (ImGui::IsMousePosValid())
-				ImGui::Text("Mouse Position: (%.1f,%.1f)", io.MousePos.x, io.MousePos.y);
-			else
-				ImGui::Text("Mouse Position: <invalid>");
-		}
-		ImGui::End();
-
-
 		ImGui::SetNextWindowSize(ImVec2(500, 440), ImGuiCond_FirstUseEver);
 		if (ImGui::Begin("Edit objects", &showMenu, ImGuiWindowFlags_MenuBar))
 		{
@@ -477,13 +476,10 @@ void mainGame::Display()
 			color[1] * 256 +
 			color[2] * 256 * 256;
 
-		printf("Clicked on pixel %f, %f, R: %i G: %i B: %i, ID: %i\n",
-			xpos, ypos, color[0], color[1], color[2], pickedID);
-
 		if (pickedID != 65280)
 		{
 			// Shot at wrong object/world deduct a point
-			printf("Shot at wrong object/world deduct a point\n");
+			highScores::Instance()->incrementScore(-1);
 		}
 		else
 		{
@@ -496,6 +492,9 @@ void mainGame::Display()
 				{
 					objects.erase(objects.begin() + i);
 					delete n;
+
+					highScores::Instance()->incrementScore(1);
+
 					break;
 				}
 			}
