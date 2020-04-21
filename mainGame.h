@@ -62,6 +62,8 @@ class mainGame
 		void computePos(float deltaMove);
 
 		void ShowMenu();
+		void timerCheck();
+		bool test;
 
 	private:
 		float rotation;
@@ -83,5 +85,7 @@ class mainGame
 		lighting* _lightData;
 
 		bool shouldGetPixel;
+
+		int objectToShootID = 0;
 
 };

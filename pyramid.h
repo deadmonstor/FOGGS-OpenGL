@@ -29,6 +29,7 @@
 	{
 	private:
 		Texture2D* _texture;
+		material* _material;
 
 	public:
 

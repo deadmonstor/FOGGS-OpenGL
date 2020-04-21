@@ -1,5 +1,6 @@
 ﻿#include "mainGame.h"
 
+
 int main(int argc, char* argv[])
 {
 	mainGame* game = new mainGame(argc, argv);
@@ -37,6 +38,13 @@ mainGame::mainGame(int argc, char* argv[])
 	glutMainLoop();
 
 }
+mainGame* uwu;
+static void tests(int s)
+{
+	mainGame* game = static_cast<mainGame*>(uwu);
+	game->test = true;
+	glutTimerFunc(4000, tests, 0);
+}
 
 void mainGame::InitGL(int argc, char* argv[])
 {
@@ -46,15 +54,18 @@ void mainGame::InitGL(int argc, char* argv[])
 
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
 	glutInitWindowSize(1920, 1080);
-	glutInitWindowPosition(0, 0);
-	glutCreateWindow("Simple OpenGL Program");
+	glutInitWindowPosition(0 , 0);
+	glutCreateWindow("Joshua Mobley's Game");
 
 	glutTimerFunc(REFRESHRATE, GLUTCallbacks::Timer, REFRESHRATE);
+
+	uwu = this;
+	glutTimerFunc(10000, tests, 0);
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	glViewport(0, 0, 1920, 1080);
-	gluPerspective(45,float(1920) / float(1080), 0.1f, 10000.0f);
+	gluPerspective(45, float(1920) / float(1080), 0.1f, 10000.0f);
 
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_CULL_FACE);
@@ -64,7 +75,7 @@ void mainGame::InitGL(int argc, char* argv[])
 	glDepthFunc(GL_LEQUAL);
 
 	glMatrixMode(GL_MODELVIEW);
-	//glutFullScreen();
+	glutFullScreen();
 
 }
 
@@ -77,20 +88,24 @@ void mainGame::InitObjects()
 	Mesh* cubeMesh = MeshLoader::Instance()->Load((char *)"objects/cube.txt");
 	Mesh* pyramidMesh = MeshLoader::Instance()->Load((char*)"objects/pyramid.txt");
 
-	Texture2D* texture = new Texture2D();
-	texture->Load((char*)"images/Penguins.raw", 512, 512);
+	Texture2D* pyramidTexture = new Texture2D();
+	pyramidTexture->Load((char*)"images/stars.raw", 512, 512);
 
 
 	for (int i = 0; i < 10; i++)
 	{
-		objects.push_back(new Pyramid(pyramidMesh, texture, ((rand() % 400) / 10.0f) - 20.0f, ((rand() % 200) / 10.0f) - 10.0f, -(rand() % 1000) / 10.0f, objects.size()));
+		objects.push_back(new Pyramid(pyramidMesh, pyramidTexture, ((rand() % 400) / 10.0f) - 20.0f, ((rand() % 200) / 10.0f) - 10.0f, (rand() % 1000) / 10.0f, objects.size()));
 	}
+
+
+	Texture2D* cubeTexture = new Texture2D();
+	cubeTexture->Load((char*)"images/Penguins.raw", 512, 512);
 
 	srand(time(NULL) + 50);
 
 	for (int i = 0; i < 100; i++)
 	{
-		objects.push_back(new Cube(cubeMesh, texture, ((rand() % 400) / 10.0f) - 20.0f, ((rand() % 200) / 10.0f) - 10.0f, -(rand() % 1000) / 10.0f, objects.size()));
+		objects.push_back(new Cube(cubeMesh, cubeTexture, ((rand() % 400) / 10.0f) - 20.0f, ((rand() % 200) / 10.0f) - 10.0f, (rand() % 2000) / 10.0f, objects.size()));
 	}
 
 }
@@ -106,9 +121,9 @@ void mainGame::InitLighting()
 
 	if (_lightData) delete _lightData;
 	_lightData = new lighting();
-	_lightData->ambient.x = 0.2;
-	_lightData->ambient.y = 0.2;
-	_lightData->ambient.z = 0.2;
+	_lightData->ambient.x = 0.7;
+	_lightData->ambient.y = 0.7;
+	_lightData->ambient.z = 0.7;
 	_lightData->ambient.w = 1.0;
 	_lightData->diffuse.x = 0.8;
 	_lightData->diffuse.y = 0.8;
@@ -128,6 +143,15 @@ void mainGame::computePos(float deltaMove) {
 	z += deltaMove * lz * 0.1f;
 }
 
+void mainGame::timerCheck()
+{
+	if (test)
+	{
+		objectToShootID = objectToShootID++;
+		test = false;
+	}
+}
+
 void mainGame::Update()
 {
 	if (deltaMove)
@@ -142,9 +166,10 @@ void mainGame::Update()
 	glLightfv(GL_LIGHT0, GL_AMBIENT, &(_lightData->ambient.x));
 	glLightfv(GL_LIGHT0, GL_POSITION, &(_lightPosition->x));
 
-	for (SceneObject* n : objects)
-		n->Update();
-
+	for (SceneObject* curObject : objects)
+		curObject->Update();
+	
+	timerCheck();
 	glutPostRedisplay();
 }
 
@@ -348,10 +373,15 @@ void mainGame::Display()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
-	for (SceneObject* n : objects)
+	for (SceneObject* curObj : objects)
 	{
 		glPushMatrix();
-			n->DrawBasic();
+
+		if (curObj->id != objectToShootID)
+			curObj->Draw();
+		else 
+			curObj->DrawBasic();
+
 		glPopMatrix();
 	}
 
@@ -377,10 +407,9 @@ void mainGame::Display()
 	glLoadIdentity();
 	//Draw
 
-	int widthcenter = (1920 / 2); 
-	int heightcenter = (1080 / 2);
+	int widthcenter = (glutGet(GLUT_WINDOW_WIDTH) / 2);
+	int heightcenter = (glutGet(GLUT_WINDOW_HEIGHT) / 2);
 	float sizeOfCrosshair = 3.0f;
-
 
 	glBegin(GL_QUADS);
 		glColor3ub(0,0,0);
@@ -409,7 +438,7 @@ void mainGame::Display()
 
 		GLubyte color[4];
 
-		glReadPixels(window_width / 2, window_height / 2 , 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, color);
+		glReadPixels(window_width / 2, (window_height / 2) - 4 , 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, color);
 
 		int pickedID =
 			color[0] +
@@ -419,16 +448,26 @@ void mainGame::Display()
 		printf("Clicked on pixel %f, %f, R: %i G: %i B: %i, ID: %i\n",
 			xpos, ypos, color[0], color[1], color[2], pickedID);
 
-		for (int i = 0; i < objects.size(); i++)
+		if (pickedID != 65280)
 		{
-			SceneObject* n = objects.at(i);
+			// Shot at wrong object/world deduct a point
+			printf("Shot at wrong object/world deduct a point\n");
+		}
+		else
+		{
 
-			if (n->id == pickedID)
+			for (int i = 0; i < objects.size(); i++)
 			{
-				objects.erase(objects.begin() + i);
-				delete n;
-				break;
+				SceneObject* n = objects.at(i);
+
+				if (n->id == objectToShootID)
+				{
+					objects.erase(objects.begin() + i);
+					delete n;
+					break;
+				}
 			}
+
 		}
 
 		shouldGetPixel = false;

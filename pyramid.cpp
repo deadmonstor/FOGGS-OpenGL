@@ -2,7 +2,7 @@
 
 using namespace std;
 
-Pyramid::Pyramid(Mesh* mesh, Texture2D* text, float x, float y, float z, int _id) : SceneObject(mesh)
+Pyramid::Pyramid(Mesh* mesh, Texture2D* texture, float x, float y, float z, int _id) : SceneObject(mesh)
 {
 
 	id = _id;
@@ -12,7 +12,13 @@ Pyramid::Pyramid(Mesh* mesh, Texture2D* text, float x, float y, float z, int _id
 	b = ((_id & 0x00FF0000) >> 16);
 
 	_position = Vector3(x, y, z);
-	_texture = text;
+	_texture = texture;
+
+	_material = new material();
+	_material->ambient.x = 0.8; _material->ambient.y = 0.8; _material->ambient.z = 0.8; _material->ambient.w = 1.0;
+	_material->diffuse.x = 0.8; _material->diffuse.y = 0.8; _material->diffuse.z = 0.8; _material->diffuse.w = 1.0;
+	_material->specular.x = 0.1; _material->specular.y = 0.1; _material->specular.z = 0.1; _material->specular.w = 0.1;
+	_material->shininess = 1.0f;
 
 }
 
@@ -26,6 +32,7 @@ void Pyramid::Draw()
 
 	if (_mesh->indexedVertices != nullptr && _mesh->indexedNormals != nullptr && _mesh->indices != nullptr)
 	{
+		glColor3ub(255,255,255);
 		glBindTexture(GL_TEXTURE_2D, _texture->GetID());
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
@@ -35,8 +42,12 @@ void Pyramid::Draw()
 
 		glEnable(GL_NORMAL_ARRAY);
 		glNormalPointer(GL_FLOAT, 0, _mesh->indexedNormals);
+
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glVertexPointer(3, GL_FLOAT, 0, _mesh->indexedVertices);
+
+		glMaterialfv(GL_FRONT, GL_AMBIENT, &(_material->ambient.x));
+		glMaterialf(GL_FRONT, GL_SHININESS, _material->shininess);
 
 		glTexCoordPointer(2, GL_FLOAT, 0, _mesh->TexCoords);
 		glPushMatrix();
@@ -44,7 +55,6 @@ void Pyramid::Draw()
 		glPopMatrix();
 
 		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-		glDisableClientState(GL_COLOR_ARRAY);
 		glDisableClientState(GL_VERTEX_ARRAY);
 		glTranslatef(0, 0, 0);
 	}

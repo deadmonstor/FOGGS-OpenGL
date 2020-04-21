@@ -46,7 +46,7 @@ void SceneObject::DrawBasic()
 		glEnable(GL_COLOR_MATERIAL);
 		glColorMaterial(GL_FRONT, GL_DIFFUSE);
 		glDisable(GL_LIGHTING);
-		glColor3ub(r,g,b);
+		glColor3ub(0,255,0);
 
 		glPushMatrix();
 			glDrawElements(GL_TRIANGLES, _mesh->numIndices, GL_UNSIGNED_SHORT, _mesh->indices);
@@ -55,5 +55,10 @@ void SceneObject::DrawBasic()
 
 		glDisableClientState(GL_VERTEX_ARRAY);
 		glTranslatef(0, 0, 0);
+
+		glEnable(GL_TEXTURE_2D);
+		glDisable(GL_COLOR_MATERIAL);
+		glEnable(GL_LIGHTING);
+		glShadeModel(GL_FLAT);
 	}
 }

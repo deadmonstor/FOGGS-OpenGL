@@ -2,7 +2,7 @@
 
 using namespace std;
 
-Cube::Cube(Mesh* mesh, Texture2D* text, float x, float y, float z, int _id) : SceneObject(mesh)
+Cube::Cube(Mesh* mesh, Texture2D* texture, float x, float y, float z, int _id) : SceneObject(mesh)
 {
 
 	id = _id;
@@ -12,13 +12,13 @@ Cube::Cube(Mesh* mesh, Texture2D* text, float x, float y, float z, int _id) : Sc
 	b = ((_id & 0x00FF0000) >> 16);
 
 	_position = Vector3(x, y, z);
-	_texture = text;
+	_texture = texture;
 
 	_material = new material();
-	_material->ambient.x = 0.8; _material->ambient.y = 0.05; _material->ambient.z = 0.05; _material->ambient.w = 1.0;
-	_material->diffuse.x = 0.8; _material->diffuse.y = 0.05; _material->diffuse.z = 0.05; _material->diffuse.w = 1.0;
-	_material->specular.x = 1.0; _material->specular.y = 1.0; _material->specular.z = 1.0; _material->specular.w = 1.0;
-	_material->shininess = 100.0f;
+	_material->ambient.x = 0.8; _material->ambient.y = 0.8; _material->ambient.z = 0.8; _material->ambient.w = 1.0;
+	_material->diffuse.x = 0.8; _material->diffuse.y = 0.8; _material->diffuse.z = 0.8; _material->diffuse.w = 1.0;
+	_material->specular.x = 0.1; _material->specular.y = 0.1; _material->specular.z = 0.1; _material->specular.w = 0.1;
+	_material->shininess = 1.0f;
 
 
 }
@@ -33,6 +33,7 @@ void Cube::Draw()
 
 	if (_mesh->indexedVertices != nullptr && _mesh->indexedNormals != nullptr && _mesh->indices != nullptr)
 	{
+		glColor3ub(255,255,255);
 		glBindTexture(GL_TEXTURE_2D, _texture->GetID());
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
@@ -55,7 +56,6 @@ void Cube::Draw()
 		glPopMatrix();
 
 		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-		glDisableClientState(GL_COLOR_ARRAY);
 		glDisableClientState(GL_VERTEX_ARRAY);
 		glTranslatef(0, 0, 0);
 	}
