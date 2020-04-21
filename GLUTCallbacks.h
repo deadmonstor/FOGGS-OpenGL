@@ -1,12 +1,12 @@
 #pragma once
-class HelloGL;
+class mainGame;
 #include "GL\freeglut.h"
 #include <iostream>
 
 namespace GLUTCallbacks
 {
 
-	void Init(HelloGL* gl);
+	void Init(mainGame* gl);
 	void Timer(int preferredRefresh);
 	void Keyboard(unsigned char key, int x, int y);
 	void Display();

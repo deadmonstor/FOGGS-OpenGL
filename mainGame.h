@@ -39,11 +39,11 @@
 
 #define REFRESHRATE 16
 
-class HelloGL
+class mainGame
 {
 	public:
 
-		HelloGL(int argc, char* argv[]);
+		mainGame(int argc, char* argv[]);
 
 		void Display();
 		void Update();
@@ -51,7 +51,7 @@ class HelloGL
 		void Keyboard(unsigned char key, int x, int y);
 		void releaseKeyboard(unsigned char key, int x, int y);
 
-		~HelloGL(void);
+		~mainGame(void);
 
 		void InitObjects();
 		void InitLighting();

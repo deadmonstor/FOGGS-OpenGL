@@ -1,24 +1,24 @@
 
 #include "GLUTCallbacks.h"
-#include "HelloGL.h"
+#include "mainGame.h"
 
 namespace GLUTCallbacks
 {
 	namespace
 	{
-		HelloGL* helloGL = nullptr;
+		mainGame* mainGames = nullptr;
 	}
 
-	void Init(HelloGL* gl)
+	void Init(mainGame* gl)
 	{
-		helloGL = gl;
+		mainGames = gl;
 	}
 
 	void Display()
 	{
-		if (helloGL != nullptr)
+		if (mainGames != nullptr)
 		{
-			helloGL->Display();
+			mainGames->Display();
 		}
 	}
 
@@ -26,7 +26,7 @@ namespace GLUTCallbacks
 	{
 		int updateTime = glutGet(GLUT_ELAPSED_TIME);
 
-		helloGL->Update();
+		mainGames->Update();
 
 		updateTime = (glutGet(GLUT_ELAPSED_TIME) - updateTime);
 
@@ -35,21 +35,21 @@ namespace GLUTCallbacks
 
 	void Keyboard(unsigned char key, int x, int y)
 	{
-		helloGL->Keyboard(key , x , y);
+		mainGames->Keyboard(key , x , y);
 	}
 
 	void mouseButton(int button, int state, int x, int y) 
 	{
-		helloGL->mouseButton(button, state, x, y);
+		mainGames->mouseButton(button, state, x, y);
 	}
 
 	void mouseMove(int x, int y)
 	{
-		helloGL->mouseMove(x, y);
+		mainGames->mouseMove(x, y);
 	}
 
 	void releaseKeyboard(unsigned char key, int x, int y)
 	{
-		helloGL->releaseKeyboard(key, x, y);
+		mainGames->releaseKeyboard(key, x, y);
 	}
 }

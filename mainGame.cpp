@@ -1,15 +1,15 @@
-﻿#include "HelloGL.h"
+﻿#include "mainGame.h"
 
 int main(int argc, char* argv[])
 {
-	HelloGL* game = new HelloGL(argc, argv);
+	mainGame* game = new mainGame(argc, argv);
 
 	return 0;
 }
 
 GLfloat xpos, ypos;
 
-HelloGL::HelloGL(int argc, char* argv[])
+mainGame::mainGame(int argc, char* argv[])
 {
 	srand(time(NULL));
 	InitGL(argc, argv);
@@ -38,7 +38,7 @@ HelloGL::HelloGL(int argc, char* argv[])
 
 }
 
-void HelloGL::InitGL(int argc, char* argv[])
+void mainGame::InitGL(int argc, char* argv[])
 {
 	GLUTCallbacks::Init(this);
 
@@ -68,7 +68,7 @@ void HelloGL::InitGL(int argc, char* argv[])
 
 }
 
-void HelloGL::InitObjects()
+void mainGame::InitObjects()
 { 
 	rotation = 0;
 	curCamera = new Camera();
@@ -95,7 +95,7 @@ void HelloGL::InitObjects()
 
 }
 
-void HelloGL::InitLighting()
+void mainGame::InitLighting()
 {
 	if (_lightPosition) delete _lightPosition;
 	_lightPosition = new Vector4();
@@ -121,14 +121,14 @@ void HelloGL::InitLighting()
 
 }
 
-void HelloGL::computePos(float deltaMove) {
+void mainGame::computePos(float deltaMove) {
 
 	x += deltaMove * lx * 0.1f;
 	y += deltaMove * lx * 0.1f;
 	z += deltaMove * lz * 0.1f;
 }
 
-void HelloGL::Update()
+void mainGame::Update()
 {
 	if (deltaMove)
 		computePos(deltaMove);
@@ -150,7 +150,7 @@ void HelloGL::Update()
 
 bool showMenu = true;
 
-void HelloGL::Keyboard(unsigned char key, int x, int y)
+void mainGame::Keyboard(unsigned char key, int x, int y)
 {
 	if (!ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow)) {
 		
@@ -165,7 +165,7 @@ void HelloGL::Keyboard(unsigned char key, int x, int y)
 	ImGui_ImplGLUT_KeyboardFunc(key, x, y);
 }
 
-void HelloGL::releaseKeyboard(unsigned char key, int x, int y)
+void mainGame::releaseKeyboard(unsigned char key, int x, int y)
 {
 	switch (key) {
 		case 'w': if (deltaMove == 0.5f) deltaMove = 0; break;
@@ -176,7 +176,7 @@ void HelloGL::releaseKeyboard(unsigned char key, int x, int y)
 	ImGui_ImplGLUT_KeyboardUpFunc(key, x, y);
 }
 
-void HelloGL::mouseButton(int button, int state, int x, int y)
+void mainGame::mouseButton(int button, int state, int x, int y)
 {	
 	if (!ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow) && state == GLUT_DOWN && button == GLUT_LEFT_BUTTON)
 	{
@@ -189,7 +189,7 @@ void HelloGL::mouseButton(int button, int state, int x, int y)
 bool warping = false;
 int test1 = 0;
 int test2 = 0;
-void HelloGL::mouseMove(int x, int y)
+void mainGame::mouseMove(int x, int y)
 {
 
 	if (!ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow) && !warping)
@@ -260,7 +260,7 @@ void HelloGL::mouseMove(int x, int y)
 	ImGui_ImplGLUT_MotionFunc(x, y);
 }
 
-void HelloGL::ShowMenu()
+void mainGame::ShowMenu()
 {
 	if (showMenu)
 	{
@@ -338,7 +338,7 @@ void HelloGL::ShowMenu()
 	}
 }
 
-void HelloGL::Display()
+void mainGame::Display()
 {
 
 	ImGui_ImplOpenGL2_NewFrame();
@@ -436,7 +436,7 @@ void HelloGL::Display()
 
 }
 
-HelloGL::~HelloGL(void)
+mainGame::~mainGame(void)
 {
 
 	ImGui_ImplOpenGL2_Shutdown();
