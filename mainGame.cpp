@@ -38,12 +38,12 @@ mainGame::mainGame(int argc, char* argv[])
 	glutMainLoop();
 
 }
-mainGame* uwu;
-static void tests(int s)
+mainGame* curGame;
+static void staticTimerCallback(int s)
 {
-	mainGame* game = static_cast<mainGame*>(uwu);
-	game->test = true;
-	glutTimerFunc(4000, tests, 0);
+	mainGame* game = static_cast<mainGame*>(curGame);
+	game->timerEnded = true;
+	glutTimerFunc(4000, staticTimerCallback, 0);
 }
 
 void mainGame::InitGL(int argc, char* argv[])
@@ -59,8 +59,8 @@ void mainGame::InitGL(int argc, char* argv[])
 
 	glutTimerFunc(REFRESHRATE, GLUTCallbacks::Timer, REFRESHRATE);
 
-	uwu = this;
-	glutTimerFunc(10000, tests, 0);
+	curGame = this;
+	glutTimerFunc(10000, staticTimerCallback, 0);
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -145,10 +145,10 @@ void mainGame::computePos(float deltaMove) {
 
 void mainGame::timerCheck()
 {
-	if (test)
+	if (timerEnded)
 	{
 		objectToShootID = objectToShootID++;
-		test = false;
+		timerEnded = false;
 	}
 }
 

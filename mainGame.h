@@ -68,7 +68,7 @@ class mainGame
 
 		void ShowMenu();
 		void timerCheck();
-		bool test;
+		bool timerEnded;
 
 	private:
 		float rotation;
